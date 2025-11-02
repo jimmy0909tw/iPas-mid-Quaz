@@ -1,17 +1,8 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>測試版題庫</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <h1>📘 iPAS 題庫測試版</h1>
-  <div class="controls">
-    <button onclick="startQuiz()">🚀 開始測驗</button>
-  </div>
-  <div id="quiz-container"></div>
-  <script src="quiz.js"></script>
-</body>
-</html>
+<div class="controls">
+  <label for="level">📂 選擇題庫：</label>
+  <select id="level">
+    <option value="L1">L1 題庫</option>
+    <option value="L3">L3 題庫</option>
+  </select>
+  <button onclick="startQuiz()">🚀 開始測驗</button>
+</div>
