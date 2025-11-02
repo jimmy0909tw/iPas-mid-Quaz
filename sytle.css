@@ -1,10 +1,12 @@
 :root {
   --primary: #2563eb;
   --primary-dark: #1e40af;
-  --bg: #f9fafb;
-  --text: #222;
+  --bg: #f0f4f8;
+  --text: #1f2937;
   --card: #ffffff;
   --shadow: rgba(0, 0, 0, 0.08);
+  --correct: #22c55e;
+  --wrong: #ef4444;
 }
 
 body {
@@ -17,8 +19,8 @@ body {
 
 h1 {
   text-align: center;
-  font-size: 1.8em;
-  margin: 1em 0;
+  font-size: 2em;
+  margin: 1.2em 0 0.5em;
   color: var(--primary-dark);
 }
 
@@ -52,31 +54,42 @@ button:hover {
 }
 
 #quiz-container, #result-container {
-  max-width: 700px;
+  max-width: 720px;
   margin: 0 auto 3em;
   background: var(--card);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px var(--shadow);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px var(--shadow);
   padding: 2em;
 }
 
 .question {
-  font-size: 1.2em;
+  font-size: 1.3em;
   font-weight: bold;
-  margin-bottom: 1em;
-  line-height: 1.5;
+  margin-bottom: 1.2em;
+  line-height: 1.6;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
 }
 
 .options label {
-  display: block;
-  margin: 0.8em 0;
+  background: #e5e7eb;
+  padding: 0.8em 1em;
+  border-radius: 8px;
   font-size: 1.1em;
   cursor: pointer;
-  line-height: 1.4;
+  transition: background 0.2s;
+}
+
+.options label:hover {
+  background: #d1d5db;
 }
 
 .options input[type="radio"] {
-  margin-right: 0.5em;
+  margin-right: 0.6em;
   transform: scale(1.2);
 }
 
@@ -96,6 +109,7 @@ button:hover {
   color: #fff;
   border: none;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .button-area button:hover,
@@ -110,10 +124,20 @@ button:hover {
   line-height: 1.6;
 }
 
+.explanation .wrong {
+  color: var(--wrong);
+  font-weight: bold;
+}
+
+.explanation .correct {
+  color: var(--correct);
+  font-weight: bold;
+}
+
 .score {
   font-size: 2em;
   font-weight: bold;
-  color: #15803d;
+  color: var(--correct);
   margin-bottom: 1.2em;
   text-align: center;
 }
@@ -126,13 +150,13 @@ button:hover {
 }
 
 .wrong {
-  color: #cf222e;
+  color: var(--wrong);
   font-weight: bold;
 }
 
 @media (max-width: 600px) {
   h1 {
-    font-size: 1.5em;
+    font-size: 1.6em;
   }
 
   select, button {
