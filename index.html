@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iPAS AI 測驗系統</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>iPAS AI 測驗系統</h1>
+  <div class="controls">
+    <label for="level">選擇題庫：</label>
+    <select id="level">
+      <option value="L1">L1</option>
+      <option value="L3">L3</option>
+    </select>
+    <label for="difficulty">選擇難度：</label>
+    <select id="difficulty">
+      <option value="all">全部</option>
+      <option value="1">★</option>
+      <option value="2">★★</option>
+      <option value="3">★★★</option>
+    </select>
+    <button id="startBtn">開始測驗</button>
+  </div>
+  <div id="quizContainer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
