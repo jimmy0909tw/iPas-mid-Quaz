@@ -135,4 +135,41 @@ function showResult() {
               <div>正確答案：${String.fromCharCode(65 + w.q.answer)}. ${w.q.options[w.q.answer]}</div>
               <div>說明：${w.q.explanation}</div>
             </li>
-          `).join
+          `).join('')}
+        </ol>
+      </div>
+    ` : `<div>全部答對，太厲害了！</div>`}
+    <div class="button-area">
+      <button onclick="restartQuiz()">再挑戰一次</button>
+    </div>
+  `;
+}
+
+function restartQuiz() {
+  const wrongIds = quiz
+    .map((q, i) => userAnswers[i] !== q.answer ? q.id : null)
+    .filter(id => id !== null);
+
+  const wrongQuestions = allQuestions.filter(q => wrongIds.includes(q.id));
+  const unseen = allQuestions.filter(q => !quiz.map(q => q.id).includes(q.id));
+  const extra = pickRandom(unseen, 30 - wrongQuestions.length);
+  quiz = wrongQuestions.concat(extra);
+  userAnswers = Array(quiz.length);
+  current = 0;
+  document.getElementById('result-container').style.display = 'none';
+  document.getElementById('quiz-container').style.display = 'block';
+  renderQuestion();
+}
+
+function pickRandom(arr, n) {
+  const res = [];
+  const used = new Set();
+  while (res.length < n && res.length < arr.length) {
+    const idx = Math.floor(Math.random() * arr.length);
+    if (!used.has(idx)) {
+      res.push(arr[idx]);
+      used.add(idx);
+    }
+  }
+  return res;
+}
