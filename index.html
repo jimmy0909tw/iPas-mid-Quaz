@@ -3,35 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iPAS AI 線上題庫</title>
+  <title>測試版題庫</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>📘 iPAS AI 線上題庫</h1>
-    <p style="text-align:center; font-size: 1.1em; color: #555; margin-top: -0.5em;">
-      隨機抽題・即時解說・錯題再挑戰
-    </p>
-  </header>
-
-  <section class="controls" style="background: #fff; padding: 1.5em; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 500px; margin: 2em auto;">
-    <label for="level" style="font-size: 1.2em;">📂 選擇題庫：</label>
-    <select id="level">
-      <option value="L1">L1 題庫</option>
-      <option value="L3">L3 題庫</option>
-    </select>
+  <h1>📘 iPAS 題庫測試版</h1>
+  <div class="controls">
     <button onclick="startQuiz()">🚀 開始測驗</button>
-  </section>
-
-  <main>
-    <div id="quiz-container"></div>
-    <div id="result-container" style="display:none;"></div>
-  </main>
-
-  <footer style="text-align:center; font-size: 0.9em; color: #888; margin-top: 3em; padding-bottom: 2em;">
-    © 2025 iPAS 題庫系統｜由景閔設計與開發
-  </footer>
-
+  </div>
+  <div id="quiz-container"></div>
   <script src="quiz.js"></script>
 </body>
 </html>
