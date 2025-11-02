@@ -61,7 +61,7 @@ function renderQuestion() {
       ${q.options.map((opt, i) => `
         <label>
           <input type="radio" name="option" value="${i}" required>
-          ${String.fromCharCode(65 + i)}. ${opt}
+          <span>${String.fromCharCode(65 + i)}. ${opt}</span>
         </label>
       `).join('')}
       <div class="button-area">
