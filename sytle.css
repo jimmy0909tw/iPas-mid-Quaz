@@ -131,6 +131,12 @@ button:hover {
   background: var(--primary-dark);
 }
 
+.source {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 1em;
+}
+
 .explanation {
   margin-top: 1.5em;
   padding: 1em;
