@@ -47,7 +47,6 @@ async function loadCSV(file) {
   }
 }
 
-// ✅ 支援引號、逗號、換行的 CSV 解析器
 function parseCSVLine(line) {
   const cells = [];
   let current = '';
