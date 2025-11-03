@@ -58,6 +58,10 @@ function parseCSVLine(line) {
   };
 }
 
+function formatExplanation(text) {
+  return text.replace(/\n/g, '<br>');
+}
+
 function renderQuestion() {
   const q = quiz[current];
   const container = document.getElementById('quiz-container');
@@ -90,11 +94,10 @@ function renderQuestion() {
 function showAnswer(q, ans) {
   const exp = document.getElementById('explanation');
   const isCorrect = ans === q.answer;
-  const allOptions = q.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join('<br>');
   exp.style.display = 'block';
   exp.innerHTML = isCorrect
-    ? `✔️ 答對了！<br><br>${allOptions}<br><br>${q.explanation}`
-    : `❌ 答錯了！<br>正確答案：${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}<br><br>${allOptions}<br><br>${q.explanation}`;
+    ? `✔️ 答對了！<br><br>${formatExplanation(q.explanation)}`
+    : `❌ 答錯了！<br>正確答案：${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}<br><br>${formatExplanation(q.explanation)}`;
 
   if (!isCorrect) {
     wrongAnswers.push({
@@ -137,7 +140,7 @@ function showResult() {
         <div><strong>(${i + 1}) ${w.question}</strong></div>
         <div>正確答案：${String.fromCharCode(65 + w.correct)}. ${w.options[w.correct]}</div>
         <div class="source">📄 來源：${w.source}（題號：${w.id}）</div>
-        <div class="explanation">${w.options.map((opt, j) => `${String.fromCharCode(65 + j)}. ${opt}`).join('<br>')}<br><br>${w.explanation}</div>
+        <div class="explanation">${formatExplanation(w.explanation)}</div>
       </div>
     `).join('')}
     <div class="button-area">
