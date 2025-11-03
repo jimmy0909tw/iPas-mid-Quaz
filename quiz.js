@@ -37,7 +37,7 @@ async function loadCSV(file) {
     return lines.slice(1).map((line, index) => {
       const q = parseCSVLine(line);
       q.source = file;
-      q.sourceIndex = index + 2; // CSV 第一行是標題，index 從 0 開始
+      q.sourceIndex = index + 2;
       return q;
     });
   } catch (e) {
@@ -53,7 +53,7 @@ function parseCSVLine(line) {
     question: cells[2],
     options: [cells[3], cells[4], cells[5], cells[6]],
     answer: parseInt(cells[7], 10) - 1,
-    explanation: cells[8]
+    explanation: cells[8]?.replace(/\\n/g, '\n') || ""
   };
 }
 
@@ -89,10 +89,11 @@ function renderQuestion() {
 function showAnswer(q, ans) {
   const exp = document.getElementById('explanation');
   const isCorrect = ans === q.answer;
+  const allOptions = q.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join('<br>');
   exp.style.display = 'block';
   exp.innerHTML = isCorrect
-    ? "✔️ 答對了！<br>" + q.explanation
-    : `❌ 答錯了！<br>正確答案：${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}<br>${q.explanation}`;
+    ? `✔️ 答對了！<br><br>${allOptions}<br><br>${q.explanation}`
+    : `❌ 答錯了！<br>正確答案：${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}<br><br>${allOptions}<br><br>${q.explanation}`;
 
   if (!isCorrect) {
     wrongAnswers.push({
@@ -134,7 +135,7 @@ function showResult() {
         <div><strong>(${i + 1}) ${w.question}</strong></div>
         <div>正確答案：${String.fromCharCode(65 + w.correct)}. ${w.options[w.correct]}</div>
         <div class="source">📄 來源：${w.source}（第 ${w.sourceIndex} 題）</div>
-        <div class="explanation">${w.explanation}</div>
+        <div class="explanation">${w.options.map((opt, j) => `${String.fromCharCode(65 + j)}. ${opt}`).join('<br>')}<br><br>${w.explanation}</div>
       </div>
     `).join('')}
     <div class="button-area">
