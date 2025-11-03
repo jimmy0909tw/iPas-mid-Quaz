@@ -86,12 +86,21 @@ function parseCSVLine(line) {
     question: cells[2],
     options: [cells[3], cells[4], cells[5], cells[6]],
     answer: parseInt(cells[7], 10) - 1,
-    explanation: cells[8]?.replace(/\n/g, '<br>') || ""
+    explanation: cells[8] || ""
   };
 }
 
+// ✅ 多行解說 + 正確選項加粗
 function formatExplanation(text) {
-  return text.replace(/\n/g, '<br>');
+  return text
+    .split(/(\r\n|\r|\n)/)
+    .filter(line => !/^\r?$/.test(line))
+    .map(line =>
+      line.includes('?') || line.includes('✅')
+        ? `<strong>${line.trim()}</strong>`
+        : line.trim()
+    )
+    .join('<br>');
 }
 
 function renderQuestion() {
