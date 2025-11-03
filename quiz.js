@@ -47,14 +47,36 @@ async function loadCSV(file) {
   }
 }
 
+// ✅ 支援引號、逗號、換行的 CSV 解析器
 function parseCSVLine(line) {
-  const cells = line.split(',');
+  const cells = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    const next = line[i + 1];
+
+    if (char === '"' && inQuotes && next === '"') {
+      current += '"';
+      i++;
+    } else if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      cells.push(current);
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  cells.push(current);
+
   return {
-    id: cells[0], // 題號
+    id: cells[0],
     question: cells[2],
     options: [cells[3], cells[4], cells[5], cells[6]],
     answer: parseInt(cells[7], 10) - 1,
-    explanation: cells[8]?.replace(/\\n/g, '\n') || ""
+    explanation: cells[8]?.replace(/\n/g, '<br>') || ""
   };
 }
 
