@@ -71,6 +71,17 @@ function parseCSVLine(line) {
   }
   cells.push(current);
 
+  if (cells.length < 9) {
+    console.warn("⚠️ CSV 格式錯誤，欄位不足：", line);
+    return {
+      id: "⚠️ 格式錯誤",
+      question: "⚠️ 題目讀取失敗",
+      options: ["undefined", "undefined", "undefined", "undefined"],
+      answer: 0,
+      explanation: "⚠️ 解說欄位缺失或格式錯誤"
+    };
+  }
+
   return {
     id: cells[0],
     question: cells[2],
@@ -88,9 +99,9 @@ function renderQuestion() {
   const q = quiz[current];
   const container = document.getElementById('quiz-container');
   container.innerHTML = `
+    <div class="source">📄 來源：${q.source}（題號：${q.id}）</div>
     <div class="question">第 ${current + 1} 題（共 ${quiz.length} 題）</div>
     <div class="question-text">${q.question}</div>
-    <div class="source">📄 來源：${q.source}（題號：${q.id}）</div>
     <form id="options-form" class="options">
       ${q.options.map((opt, i) => `
         <div>
@@ -159,9 +170,9 @@ function showResult() {
     <h3>❌ 錯題記錄：</h3>
     ${wrongAnswers.length === 0 ? '<p>太棒了！你全都答對了！</p>' : wrongAnswers.map((w, i) => `
       <div class="wrong-list">
+        <div class="source">📄 來源：${w.source}（題號：${w.id}）</div>
         <div><strong>(${i + 1}) ${w.question}</strong></div>
         <div>正確答案：${String.fromCharCode(65 + w.correct)}. ${w.options[w.correct]}</div>
-        <div class="source">📄 來源：${w.source}（題號：${w.id}）</div>
         <div class="explanation">${formatExplanation(w.explanation)}</div>
       </div>
     `).join('')}
