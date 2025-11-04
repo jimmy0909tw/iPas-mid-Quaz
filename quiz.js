@@ -135,8 +135,7 @@ function renderQuestion() {
 
 function showAnswer(q, ans) {
   const exp = document.getElementById('explanation');
-  const isCorrect = ans === q.answer;
-  let html = isCorrect
+  let html = ans === q.answer
     ? `✔️ 答對了！`
     : `❌ 答錯了！`;
 
@@ -149,7 +148,7 @@ function showAnswer(q, ans) {
   exp.style.display = 'block';
   exp.innerHTML = html;
 
-  if (!isCorrect) {
+  if (ans !== q.answer) {
     wrongAnswers.push({
       id: q.id,
       question: q.question,
