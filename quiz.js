@@ -8,11 +8,26 @@ const fileMap = {
   L3: ["L3_1.csv", "L3_2.csv", "L3_3.csv", "L3_A1.csv", "L3_A2.csv", "L3_A3.csv"]
 };
 
+// ====================================================================
+// ✅ 優化 1: 增加載入檢查，並使用 Math.min 確保選題數量不超限
+// ====================================================================
 async function startQuiz() {
   const level = document.getElementById("level").value;
   const files = fileMap[level];
   allQuestions = await loadMultipleCSVs(files);
-  quiz = pickRandom(allQuestions, 30);
+  
+  // 檢查是否載入到任何題目
+  if (allQuestions.length === 0) {
+    document.getElementById("quiz-container").innerHTML = `<p class="error">❌ 載入失敗或題庫為空，請檢查 CSV 檔案路徑與內容。</p>`;
+    document.getElementById("quiz-container").style.display = "block";
+    document.getElementById("result-container").style.display = "none";
+    return;
+  }
+  
+  // 確保選取的題目數量不超過題庫總數
+  const numQuestions = Math.min(allQuestions.length, 30);
+  quiz = pickRandom(allQuestions, numQuestions);
+  
   current = 0;
   wrongAnswers = [];
   document.getElementById("result-container").style.display = "none";
@@ -47,6 +62,9 @@ async function loadCSV(file) {
   }
 }
 
+// ====================================================================
+// ✅ 修改 2: 適應 10 欄位，並將 cells[8] 和 cells[9] 合併為 explanation
+// ====================================================================
 function parseCSVLine(line) {
   const cells = [];
   let current = '';
@@ -70,8 +88,9 @@ function parseCSVLine(line) {
   }
   cells.push(current);
 
+  // 檢查欄位數量：現在預期至少 9 欄 (正確解說)
   if (cells.length < 9) {
-    console.warn("⚠️ CSV 格式錯誤，欄位不足：", line);
+    console.warn("⚠️ CSV 格式錯誤，欄位不足（預期至少 9 欄）：", line);
     return {
       id: "⚠️ 格式錯誤",
       question: "⚠️ 題目讀取失敗",
@@ -80,27 +99,49 @@ function parseCSVLine(line) {
       explanation: "⚠️ 解說欄位缺失或格式錯誤"
     };
   }
+  
+  // 處理解說欄位 (cells[8] 和 cells[9])
+  const correctExplanation = cells[8] ? cells[8].trim() : "";
+  // 檢查第 10 欄是否存在 (錯誤答案解說)
+  const wrongExplanation = cells[9] ? cells[9].trim() : ""; 
+  
+  let fullExplanation = correctExplanation;
+  
+  if (wrongExplanation) {
+      // 合併解說：使用分隔線和標題
+      fullExplanation += '\n\n---\n\n【錯誤答案說明】\n' + wrongExplanation;
+  }
 
   return {
     id: cells[0],
     question: cells[2],
     options: [cells[3], cells[4], cells[5], cells[6]],
-    answer: parseInt(cells[7], 10) - 1,
-    explanation: cells[8] || ""
+    // ✅ 優化 3: 使用 trim() 處理答案數字，提高相容性
+    answer: parseInt(cells[7].trim(), 10) - 1, 
+    explanation: fullExplanation // 使用合併後的解說
   };
 }
 
-// ✅ 多行解說 + 正確選項加粗
+// ====================================================================
+// ✅ 修改 4: 強化 formatExplanation，處理合併解說中的分隔線和標題
+// ====================================================================
 function formatExplanation(text) {
   return text
     .split(/(\r\n|\r|\n)/)
     .filter(line => !/^\r?$/.test(line))
-    .map(line =>
-      line.includes('?') || line.includes('✅')
-        ? `<strong>${line.trim()}</strong>`
-        : line.trim()
-    )
-    .join('<br>');
+    .map(line => {
+      const trimmedLine = line.trim();
+      
+      if (trimmedLine === '---') {
+          return '<hr>'; // 轉換分隔線
+      }
+      
+      // 包含關鍵字或標題的行加粗
+      return trimmedLine.includes('?') || trimmedLine.includes('✅') || trimmedLine.includes('【錯誤答案說明】')
+        ? `<strong>${trimmedLine}</strong>` 
+        : trimmedLine;
+    })
+    .join('<br>'); // 使用 <br> 連接所有行
 }
 
 function renderQuestion() {
@@ -127,18 +168,30 @@ function renderQuestion() {
   `;
   document.getElementById('options-form').onsubmit = function(e) {
     e.preventDefault();
-    const ans = parseInt(e.target.option.value, 10);
+    // 答案值取用時也確保是數字
+    const ans = parseInt(e.target.option.value, 10); 
     showAnswer(q, ans);
   };
 }
 
+// ====================================================================
+// ✅ 優化 5: 答錯時顯示使用者所選的答案
+// ====================================================================
 function showAnswer(q, ans) {
   const exp = document.getElementById('explanation');
   const isCorrect = ans === q.answer;
+  
+  // 顯示使用者和正確答案的選項文字
+  const userOptionText = `${String.fromCharCode(65 + ans)}. ${q.options[ans]}`;
+  const correctOptionText = `${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}`;
+
   exp.style.display = 'block';
   exp.innerHTML = isCorrect
     ? `✔️ 答對了！<br><br>${formatExplanation(q.explanation)}`
-    : `❌ 答錯了！<br>正確答案：${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}<br><br>${formatExplanation(q.explanation)}`;
+    : `❌ 答錯了！
+       <br>您選擇了：${userOptionText} 
+       <br>正確答案：${correctOptionText}
+       <br><br>${formatExplanation(q.explanation)}`;
 
   if (!isCorrect) {
     wrongAnswers.push({
@@ -197,10 +250,15 @@ function restartQuiz() {
   startQuiz();
 }
 
+// ====================================================================
+// ✅ 優化 6: 確保選取數量不會超過總數
+// ====================================================================
 function pickRandom(arr, n) {
+  const count = Math.min(arr.length, n); 
   const res = [];
   const used = new Set();
-  while (res.length < n && res.length < arr.length) {
+  
+  while (res.length < count) { 
     const idx = Math.floor(Math.random() * arr.length);
     if (!used.has(idx)) {
       res.push(arr[idx]);
