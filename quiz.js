@@ -70,15 +70,14 @@ function parseCSVLine(line) {
   }
   cells.push(current);
 
-  if (cells.length < 11) {
+  if (cells.length < 9) {
     console.warn("⚠️ CSV 格式錯誤，欄位不足：", line);
     return {
       id: "⚠️ 格式錯誤",
       question: "⚠️ 題目讀取失敗",
       options: ["undefined", "undefined", "undefined", "undefined"],
       answer: 0,
-      explanation: "",
-      wrongExplanation: ""
+      explanation: "⚠️ 解說欄位缺失或格式錯誤"
     };
   }
 
@@ -87,11 +86,11 @@ function parseCSVLine(line) {
     question: cells[2],
     options: [cells[3], cells[4], cells[5], cells[6]],
     answer: parseInt(cells[7], 10) - 1,
-    explanation: cells[8] || "",
-    wrongExplanation: cells[9] || ""
+    explanation: cells[8] || ""
   };
 }
 
+// ✅ 多行解說 + 正確選項加粗
 function formatExplanation(text) {
   return text
     .split(/(\r\n|\r|\n)/)
@@ -135,27 +134,19 @@ function renderQuestion() {
 
 function showAnswer(q, ans) {
   const exp = document.getElementById('explanation');
-  let html = ans === q.answer
-    ? `✔️ 答對了！`
-    : `❌ 答錯了！`;
-
-  html += `<br>正確答案：${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}`;
-
-  if (q.wrongExplanation.trim()) {
-    html += `<br><br>${formatExplanation(q.wrongExplanation)}`;
-  }
-
+  const isCorrect = ans === q.answer;
   exp.style.display = 'block';
-  exp.innerHTML = html;
+  exp.innerHTML = isCorrect
+    ? `✔️ 答對了！<br><br>${formatExplanation(q.explanation)}`
+    : `❌ 答錯了！<br>正確答案：${String.fromCharCode(65 + q.answer)}. ${q.options[q.answer]}<br><br>${formatExplanation(q.explanation)}`;
 
-  if (ans !== q.answer) {
+  if (!isCorrect) {
     wrongAnswers.push({
       id: q.id,
       question: q.question,
       options: q.options,
       correct: q.answer,
       explanation: q.explanation,
-      wrongExplanation: q.wrongExplanation,
       source: q.source,
       sourceIndex: q.sourceIndex
     });
@@ -190,7 +181,7 @@ function showResult() {
         <div class="source">📄 來源：${w.source}（題號：${w.id}）</div>
         <div><strong>(${i + 1}) ${w.question}</strong></div>
         <div>正確答案：${String.fromCharCode(65 + w.correct)}. ${w.options[w.correct]}</div>
-        ${w.explanation.trim() ? `<div class="explanation">${formatExplanation(w.explanation)}</div>` : ''}
+        <div class="explanation">${formatExplanation(w.explanation)}</div>
       </div>
     `).join('')}
     <div class="button-area">
